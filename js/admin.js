@@ -1,4 +1,9 @@
-const API_URL = 'http://localhost:5000/api';
+// 1. ដោះស្រាយ Dynamic Host សម្រាប់ local network & production
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+  ? `http://${window.location.hostname}:5000`
+  : 'https://your-backend-domain.com'; // 👉 ប្រសិនបើ Deploy លើ Render/Server ត្រូវដូរ Domain ត្រង់នេះ
+
+const API_URL = `${API_BASE}/api`;
 
 function getToken() { return localStorage.getItem('adminToken'); }
 
@@ -20,18 +25,22 @@ async function login(e) {
   const username = document.getElementById('username').value;
   const password = document.getElementById('password').value;
 
-  const res = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password })
-  });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
 
-  if (res.ok) {
-    localStorage.setItem('adminToken', data.token);
-    window.location.href = 'admin.html';
-  } else {
-    document.getElementById('loginError').textContent = data.message;
+    if (res.ok) {
+      localStorage.setItem('adminToken', data.token);
+      window.location.href = 'admin.html';
+    } else {
+      document.getElementById('loginError').textContent = data.message || 'Login មិនជោគជ័យ';
+    }
+  } catch (err) {
+    document.getElementById('loginError').textContent = 'មិនអាចភ្ជាប់ទៅកាន់ Server បានទេ!';
   }
 }
 
@@ -42,35 +51,43 @@ function logout() {
 
 // ---- DASHBOARD ----
 async function loadDashboard() {
-  const res = await fetch(`${API_URL}/dashboard/stats`, {
-    headers: { 'Authorization': `Bearer ${getToken()}` }
-  });
-  const stats = await res.json();
-  document.getElementById('statProducts').textContent = stats.totalProducts;
-  document.getElementById('statOrders').textContent = stats.totalOrders;
-  document.getElementById('statRevenue').textContent = `$${stats.totalRevenue.toFixed(2)}`;
-  document.getElementById('statLowStock').textContent = stats.lowStock;
+  try {
+    const res = await fetch(`${API_URL}/dashboard/stats`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    const stats = await res.json();
+    document.getElementById('statProducts').textContent = stats.totalProducts || 0;
+    document.getElementById('statOrders').textContent = stats.totalOrders || 0;
+    document.getElementById('statRevenue').textContent = `$${(stats.totalRevenue || 0).toFixed(2)}`;
+    document.getElementById('statLowStock').textContent = stats.lowStock || 0;
+  } catch (err) {
+    console.error('Failed to load dashboard:', err);
+  }
 }
 
 // ---- PRODUCTS ----
 async function loadAdminProducts() {
-  const res = await fetch(`${API_URL}/products`);
-  const products = await res.json();
-  const tbody = document.getElementById('productTableBody');
+  try {
+    const res = await fetch(`${API_URL}/products`);
+    const products = await res.json();
+    const tbody = document.getElementById('productTableBody');
 
-  tbody.innerHTML = products.map(p => `
-    <tr>
-      <td><img src="http://localhost:5000${p.image}" onerror="this.src='https://via.placeholder.com/50'"></td>
-      <td>${p.name}</td>
-      <td>$${Number(p.price).toFixed(2)}</td>
-      <td>${p.category}</td>
-      <td>${p.stock <= 5 ? `<span style="color:#ef4444; font-weight:700;">${p.stock} ⚠️</span>` : p.stock}</td>
-      <td>
-        <button class="btn btn-sm" onclick='editProduct(${JSON.stringify(p)})'>កែ</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p._id}')">លុប</button>
-      </td>
-    </tr>
-  `).join('');
+    tbody.innerHTML = products.map(p => `
+      <tr>
+        <td><img src="${API_BASE}${p.image}" onerror="this.src='https://via.placeholder.com/50'"></td>
+        <td>${p.name}</td>
+        <td>$${Number(p.price).toFixed(2)}</td>
+        <td>${p.category}</td>
+        <td>${p.stock <= 5 ? `<span style="color:#ef4444; font-weight:700;">${p.stock} ⚠️</span>` : p.stock}</td>
+        <td>
+          <button class="btn btn-sm" onclick='editProduct(${JSON.stringify(p)})'>កែ</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p._id}')">លុប</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error('Failed to load products:', err);
+  }
 }
 
 document.getElementById('productForm')?.addEventListener('submit', async function (e) {
@@ -94,19 +111,23 @@ document.getElementById('productForm')?.addEventListener('submit', async functio
   const url = editId ? `${API_URL}/products/${editId}` : `${API_URL}/products`;
   const method = editId ? 'PUT' : 'POST';
 
-  const res = await fetch(url, {
-    method,
-    headers: { 'Authorization': `Bearer ${getToken()}` },
-    body: formData
-  });
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Authorization': `Bearer ${getToken()}` },
+      body: formData
+    });
 
-  if (res.ok) {
-    alert(editId ? 'កែប្រែជោគជ័យ!' : 'បន្ថែមទំនិញជោគជ័យ!');
-    document.getElementById('productForm').reset();
-    document.getElementById('editId').value = '';
-    loadAdminProducts();
-  } else {
-    alert('មានបញ្ហា! សូមព្យាយាមម្តងទៀត');
+    if (res.ok) {
+      alert(editId ? 'កែប្រែជោគជ័យ!' : 'បន្ថែមទំនិញជោគជ័យ!');
+      document.getElementById('productForm').reset();
+      document.getElementById('editId').value = '';
+      loadAdminProducts();
+    } else {
+      alert('មានបញ្ហា! សូមព្យាយាមម្តងទៀត');
+    }
+  } catch (err) {
+    alert('មិនអាចផ្ញើទិន្នន័យទៅ Server បានទេ!');
   }
 });
 
@@ -119,7 +140,7 @@ function editProduct(p) {
   document.getElementById('pRating').value = p.rating;
   document.getElementById('pTag').value = p.tag;
   document.getElementById('pCategory').value = p.category;
-  document.getElementById('pSize').value = p.size.join(', ');
+  document.getElementById('pSize').value = Array.isArray(p.size) ? p.size.join(', ') : p.size;
   document.getElementById('pColor').value = p.color;
   document.getElementById('pStock').value = p.stock;
   window.scrollTo(0, 0);
@@ -127,55 +148,67 @@ function editProduct(p) {
 
 async function deleteProduct(id) {
   if (!confirm('តើអ្នកប្រាកដជាចង់លុបទំនិញនេះមែនទេ?')) return;
-  await fetch(`${API_URL}/products/${id}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${getToken()}` }
-  });
-  loadAdminProducts();
+  try {
+    const res = await fetch(`${API_URL}/products/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    if (res.ok) loadAdminProducts();
+  } catch (err) {
+    alert('មិនអាចលុបទំនិញបានទេ!');
+  }
 }
 
 // ---- ORDERS ----
 async function loadAdminOrders() {
-  const res = await fetch(`${API_URL}/orders/all`, {
-    headers: { 'Authorization': `Bearer ${getToken()}` }
-  });
-  const orders = await res.json();
-  const tbody = document.getElementById('orderTableBody');
+  try {
+    const res = await fetch(`${API_URL}/orders/all`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    const orders = await res.json();
+    const tbody = document.getElementById('orderTableBody');
 
-  if (orders.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6">មិនទាន់មានការបញ្ជាទិញនៅឡើយទេ</td></tr>';
-    return;
+    if (!orders || orders.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6">មិនទាន់មានការបញ្ជាទិញនៅឡើយទេ</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = orders.map(o => `
+      <tr>
+        <td>#${o._id.slice(-6).toUpperCase()}</td>
+        <td>${o.user?.name || 'N/A'}<br><small style="color:var(--gray)">${o.user?.phone || ''}</small></td>
+        <td>${o.items ? o.items.map(i => `${i.name} x${i.qty}`).join('<br>') : ''}</td>
+        <td><strong>$${Number(o.total || 0).toFixed(2)}</strong></td>
+        <td>${new Date(o.createdAt).toLocaleDateString('km-KH')}</td>
+        <td>
+          <select onchange="updateOrderStatus('${o._id}', this.value)" style="padding:6px; border-radius:6px;">
+            <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+            <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
+            <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+            <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error('Failed to load orders:', err);
   }
-
-  tbody.innerHTML = orders.map(o => `
-    <tr>
-      <td>#${o._id.slice(-6).toUpperCase()}</td>
-      <td>${o.user?.name || 'N/A'}<br><small style="color:var(--gray)">${o.user?.phone || ''}</small></td>
-      <td>${o.items.map(i => `${i.name} x${i.qty}`).join('<br>')}</td>
-      <td><strong>$${o.total.toFixed(2)}</strong></td>
-      <td>${new Date(o.createdAt).toLocaleDateString('km-KH')}</td>
-      <td>
-        <select onchange="updateOrderStatus('${o._id}', this.value)" style="padding:6px; border-radius:6px;">
-          <option value="Pending" ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
-          <option value="Confirmed" ${o.status === 'Confirmed' ? 'selected' : ''}>Confirmed</option>
-          <option value="Shipped" ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-          <option value="Delivered" ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-        </select>
-      </td>
-    </tr>
-  `).join('');
 }
 
 async function updateOrderStatus(orderId, status) {
-  const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
-    body: JSON.stringify({ status })
-  });
-  if (res.ok) {
-    alert(`✅ ស្ថានភាព Order ត្រូវបានប្តូរទៅ ${status}`);
-  } else {
-    alert('❌ មានបញ្ហា!');
+  try {
+    const res = await fetch(`${API_URL}/orders/${orderId}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ status })
+    });
+    if (res.ok) {
+      alert(`✅ ស្ថានភាព Order ត្រូវបានប្តូរទៅ ${status}`);
+    } else {
+      alert('❌ មានបញ្ហា!');
+    }
+  } catch (err) {
+    alert('មិនអាចកែប្រែស្ថានភាព Order បានទេ!');
   }
 }
 

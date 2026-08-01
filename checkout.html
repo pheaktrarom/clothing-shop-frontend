@@ -39,8 +39,10 @@
     <div class="cart-summary" style="flex:1; min-width:280px;" id="orderSummary"></div>
   </div>
 
+  <!-- 👈 បន្ថែម config.js នៅទីនេះ -->
+  <script src="js/config.js"></script>
   <script>
-    const API_URL = 'http://localhost:5000/api';
+    // API_URL ត្រូវទាញចេញពី config.js ដោយស្វ័យប្រវត្តិ
 
     function renderSummary() {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
