@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>គណនីរបស់ខ្ញុំ</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">My<span>Shop</span></div>
+    <div class="nav-links"><a href="index.html">ទំនិញ</a><a href="cart.html">កន្ត្រក</a></div>
+    <div class="nav-icons"><a href="admin.html"><i class="fa-solid fa-user-shield"></i></a></div>
+  </nav>
+
+  <div class="container" style="max-width:600px;">
+
+    <!-- LOGIN / REGISTER (មិនទាន់ Login) -->
+    <div id="authBox">
+      <div class="tabs">
+        <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">ចូលគណនី</button>
+        <button class="tab-btn" id="tabRegister" onclick="switchTab('register')">បង្កើតគណនីថ្មី</button>
+      </div>
+
+      <div class="admin-form" id="loginForm">
+        <h2 style="margin-bottom:16px;">ចូលគណនី</h2>
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="ពាក្យសម្ងាត់" required>
+        <p id="loginError" style="color:#ef4444; margin-bottom:10px;"></p>
+        <button class="btn btn-block" onclick="loginUser()">ចូល</button>
+      </div>
+
+      <div class="admin-form" id="registerForm" style="display:none;">
+        <h2 style="margin-bottom:16px;">បង្កើតគណនីថ្មី</h2>
+        <input type="text" id="regName" placeholder="ឈ្មោះពេញ" required>
+        <input type="email" id="regEmail" placeholder="Email" required>
+        <input type="password" id="regPassword" placeholder="ពាក្យសម្ងាត់" required>
+        <input type="text" id="regPhone" placeholder="លេខទូរស័ព្ទ">
+        <input type="text" id="regAddress" placeholder="អាសយដ្ឋាន">
+        <p id="regError" style="color:#ef4444; margin-bottom:10px;"></p>
+        <button class="btn btn-block" onclick="registerUser()">បង្កើតគណនី</button>
+      </div>
+    </div>
+
+    <!-- PROFILE (Login រួច) -->
+    <div id="profileBox" style="display:none;">
+      <div class="admin-form">
+        <h2 style="margin-bottom:16px;">👤 ព័ត៌មានផ្ទាល់ខ្លួន</h2>
+        <p><strong>ឈ្មោះ:</strong> <span id="pfName"></span></p>
+        <p><strong>Email:</strong> <span id="pfEmail"></span></p>
+        <p><strong>ទូរស័ព្ទ:</strong> <span id="pfPhone"></span></p>
+        <p><strong>អាសយដ្ឋាន:</strong> <span id="pfAddress"></span></p>
+        <button class="btn btn-danger" style="margin-top:16px;" onclick="logoutUser()">ចាកចេញ</button>
+      </div>
+
+      <h2 style="margin:20px 0;">📦 ប្រវត្តិការបញ្ជាទិញ</h2>
+      <div id="orderHistory"></div>
+    </div>
+
+  </div>
+
+  <script src="js/account.js"></script>
+</body>
+</html>

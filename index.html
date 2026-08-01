@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyShop - ហាងសម្លៀកបំពាក់ទំនើប</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">My<span>Shop</span></div>
+    <div class="nav-links">
+      <a href="index.html">ទំព័រដើម</a>
+      <a href="index.html">ទំនិញ</a>
+      <a href="#trust">អំពីយើង</a>
+    </div>
+    <div class="nav-icons">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="ស្វែងរកទំនិញ..." onkeyup="searchProducts()">
+      </div>
+      <button class="dark-toggle" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i></button>
+      <a href="#"><i class="fa-regular fa-heart"></i><span class="badge" id="wishlistCount">0</span></a>
+      <a href="cart.html"><i class="fa-solid fa-bag-shopping"></i><span class="badge" id="cartCount">0</span></a>
+      <a href="admin.html"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text" data-aos="fade-right">
+      <div class="tag">New Collection 2026</div>
+      <h1>សម្លៀកពាក់តាមបែប<br>ទំនើប & ទាន់សម័យ</h1>
+      <p>ស្វែងរកម៉ូតសម្លៀកបំពាក់គុណភាពខ្ពស់ រចនាឡើងសម្រាប់រូបភាពថ្មីរបស់អ្នក</p>
+      <a href="#products" class="btn btn-gold">Shop Now <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <img class="hero-img" data-aos="fade-left" src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600" alt="fashion model">
+  </section>
+
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <div><h2>ប្រភេទទំនិញ</h2><p>ជ្រើសរើសតាមប្រភេទដែលអ្នកចូលចិត្ត</p></div>
+    </div>
+    <div class="categories" data-aos="fade-up">
+      <div class="cat-chip active" onclick="filterCategory('all', this)"><i class="fa-solid fa-border-all"></i><br>ទាំងអស់</div>
+      <div class="cat-chip" onclick="filterCategory('អាវ', this)"><i class="fa-solid fa-shirt"></i><br>អាវ</div>
+      <div class="cat-chip" onclick="filterCategory('ខោ', this)"><i class="fa-solid fa-vest"></i><br>ខោ</div>
+      <div class="cat-chip" onclick="filterCategory('សំពត់', this)"><i class="fa-solid fa-person-dress"></i><br>សំពត់</div>
+      <div class="cat-chip" onclick="filterCategory('ស្បែកជើង', this)"><i class="fa-solid fa-shoe-prints"></i><br>ស្បែកជើង</div>
+    </div>
+  </div>
+
+  <div class="container" id="products">
+    <div class="section-header" data-aos="fade-up">
+      <div><h2>ទំនិញពេញនិយម</h2><p>ស្វែងរកទំនិញថ្មីៗ ដែលកំពុងលក់ដាច់</p></div>
+    </div>
+    <div class="tabs" data-aos="fade-up">
+      <button class="tab-btn active" onclick="filterTab('all', this)">ទាំងអស់</button>
+      <button class="tab-btn" onclick="filterTab('new', this)">🆕 New Arrival</button>
+      <button class="tab-btn" onclick="filterTab('bestseller', this)">🔥 Best Seller</button>
+      <button class="tab-btn" onclick="filterTab('flashsale', this)">⚡ Flash Sale</button>
+    </div>
+    <div class="product-grid" id="productGrid" data-aos="fade-up"></div>
+  </div>
+
+  <div class="container" id="trust">
+    <div class="trust-grid">
+      <div class="trust-item" data-aos="fade-up"><i class="fa-solid fa-shield-halved"></i><h3>ការទូទាត់សុវត្ថិភាព</h3><p>ការពារព័ត៌មានអតិថិជន 100%</p></div>
+      <div class="trust-item" data-aos="fade-up" data-aos-delay="100"><i class="fa-solid fa-truck-fast"></i><h3>ដឹកជញ្ជូនលឿន</h3><p>ដល់ដៃក្នុងរយៈពេល 2-4 ថ្ងៃ</p></div>
+      <div class="trust-item" data-aos="fade-up" data-aos-delay="200"><i class="fa-solid fa-rotate-left"></i><h3>ប្តូរទំនិញងាយស្រួល</h3><p>ធានាប្តូរក្នុងរយៈពេល 7 ថ្ងៃ</p></div>
+      <div class="trust-item" data-aos="fade-up" data-aos-delay="300"><i class="fa-solid fa-star"></i><h3>Review ល្អពីអតិថិជន</h3><p>ភាពជឿជាក់ពីអតិថិជនរាប់ពាន់នាក់</p></div>
+    </div>
+  </div>
+
+  <div class="newsletter" data-aos="zoom-in">
+    <h2>📩 ជាវព័ត៌មានថ្មីៗ</h2>
+    <p>ទទួលបានការបញ្ចុះតម្លៃ និងទំនិញថ្មីមុនគេ</p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="Email របស់អ្នក">
+      <button class="btn btn-gold">Subscribe</button>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-grid">
+      <div><h4>My<span style="color:var(--gold)">Shop</span></h4><p>ហាងសម្លៀកបំពាក់ទំនើប គុណភាពខ្ពស់ តម្លៃសមរម្យ។</p></div>
+      <div><h4>ទំព័រ</h4><ul><li>ទំនិញ</li><li>អំពីយើង</li><li>ទំនាក់ទំនង</li></ul></div>
+      <div><h4>ជំនួយ</h4><ul><li>របៀបបញ្ជាទិញ</li><li>គោលការណ៍ប្តូរ/ដូរ</li><li>ដឹកជញ្ជូន</li></ul></div>
+      <div><h4>ទំនាក់ទំនង</h4><ul><li><i class="fa-solid fa-phone"></i> 012 345 678</li><li><i class="fa-solid fa-envelope"></i> info@myshop.com</li></ul></div>
+    </div>
+    <div class="footer-bottom">© 2026 MyShop. All rights reserved.</div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="js/main.js"></script>
+  <script>AOS.init({ duration: 700, once: true });</script>
+</body>
+</html>

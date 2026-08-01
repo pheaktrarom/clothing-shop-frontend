@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>កន្ត្រករបស់ខ្ញុំ - MyShop</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">My<span>Shop</span></div>
+    <div class="nav-links">
+      <a href="index.html">ទំនិញ</a>
+      <a href="cart.html">កន្ត្រក</a>
+    </div>
+    <div class="nav-icons">
+      <a href="account.html"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </nav>
+
+  <div class="container" style="display:flex; gap:30px; flex-wrap:wrap; align-items:flex-start;">
+    <div style="flex:2; min-width:300px;">
+      <h2 style="margin-bottom:20px;">🛒 កន្ត្រករបស់ខ្ញុំ</h2>
+      <div id="cartItems"></div>
+    </div>
+
+    <div class="cart-summary" id="cartSummary" style="flex:1; min-width:280px;">
+      <h3 style="margin-bottom:16px;">សង្ខេបការបញ្ជាទិញ</h3>
+      <div class="coupon-row">
+        <input type="text" id="couponInput" placeholder="Coupon Code (ឧ. SAVE10)">
+        <button class="btn btn-sm" onclick="applyCoupon()">ប្រើ</button>
+      </div>
+      <div class="summary-row"><span>តម្លៃសរុប</span><span id="subtotalVal">$0.00</span></div>
+      <div class="summary-row"><span>ថ្លៃដឹកជញ្ជូន</span><span id="shippingVal">$0.00</span></div>
+      <div class="summary-row"><span>បញ្ចុះតម្លៃ</span><span id="discountVal">-$0.00</span></div>
+      <div class="summary-row total"><span>សរុបចុងក្រោយ</span><span id="totalVal">$0.00</span></div>
+      <button class="btn btn-block" style="margin-top:16px;" onclick="goToCheckout()">✅ បន្តទៅ Checkout</button>
+    </div>
+  </div>
+
+  <script src="js/cart.js"></script>
+</body>
+</html>

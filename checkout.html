@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - MyShop</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">My<span>Shop</span></div>
+    <div class="nav-links">
+      <a href="index.html">ទំនិញ</a>
+      <a href="cart.html">កន្ត្រក</a>
+    </div>
+    <div class="nav-icons">
+      <a href="account.html"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </nav>
+
+  <div class="container" style="display:flex; gap:30px; flex-wrap:wrap;">
+    <div class="checkout-form" style="flex:2; min-width:300px; background:var(--white); padding:30px; border-radius:16px; box-shadow:var(--shadow);">
+      <h2 style="margin-bottom:20px;">📍 អាសយដ្ឋានដឹកជញ្ជូន</h2>
+      <input type="text" id="fullName" placeholder="ឈ្មោះពេញ" required>
+      <input type="text" id="phone" placeholder="លេខទូរស័ព្ទ" required>
+      <input type="text" id="address" placeholder="អាសយដ្ឋាន (ភូមិ/សង្កាត់/ខណ្ឌ/ក្រុង)" required>
+      
+      <h2 style="margin:20px 0;">💳 វិធីទូទាត់</h2>
+      <select id="paymentMethod">
+        <option value="Cash on Delivery">ទូទាត់ជាសាច់ប្រាក់ (Cash on Delivery)</option>
+        <option value="ABA PayWay">ABA PayWay</option>
+        <option value="Credit / Debit Card">Credit / Debit Card</option>
+      </select>
+      
+      <button class="btn btn-block" style="margin-top:20px;" onclick="placeOrder()">✅ បញ្ជាក់ការបញ្ជាទិញ</button>
+    </div>
+
+    <div class="cart-summary" style="flex:1; min-width:280px;" id="orderSummary"></div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+
+    function renderSummary() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (cart.length === 0) {
+        alert('កន្ត្រករបស់អ្នកទទេ! សូមជ្រើសរើសទំនិញជាមុនសិន។');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const total = cart.reduce((s, i) => {
+        const itemPrice = i.discount > 0 ? (i.price - (i.price * i.discount / 100)) : i.price;
+        return s + (itemPrice * i.qty);
+      }, 0);
+
+      document.getElementById('orderSummary').innerHTML = `
+        <h3 style="margin-bottom:16px;">របស់ក្នុងកន្ត្រក (${cart.length})</h3>
+        ${cart.map(i => {
+          const itemPrice = i.discount > 0 ? (i.price - (i.price * i.discount / 100)) : i.price;
+          return `<div class="summary-row"><span>${i.name} x${i.qty}</span><span>$${(itemPrice * i.qty).toFixed(2)}</span></div>`;
+        }).join('')}
+        <div class="summary-row total"><span>សរុប</span><span>$${total.toFixed(2)}</span></div>
+      `;
+
+      // Auto-fill ព័ត៌មានប្រសិនបើធ្លាប់ Login
+      const customerInfo = JSON.parse(localStorage.getItem('customerInfo') || 'null');
+      if (customerInfo) {
+        document.getElementById('fullName').value = customerInfo.name || '';
+        document.getElementById('phone').value = customerInfo.phone || '';
+        document.getElementById('address').value = customerInfo.address || '';
+      }
+    }
+
+    async function placeOrder() {
+      const name = document.getElementById('fullName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const paymentMethod = document.getElementById('paymentMethod').value;
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+      if (!name || !phone || !address) {
+        alert('សូមបំពេញព័ត៌មានដឹកជញ្ជូនឱ្យបានគ្រប់គ្រាន់!');
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert('គ្មានទំនិញក្នុងកន្ត្រកទេ!');
+        return;
+      }
+
+      const totalAmount = cart.reduce((s, i) => {
+        const itemPrice = i.discount > 0 ? (i.price - (i.price * i.discount / 100)) : i.price;
+        return s + (itemPrice * i.qty);
+      }, 0);
+
+      const orderData = {
+        customerName: name,
+        phone: phone,
+        address: address,
+        paymentMethod: paymentMethod,
+        items: cart.map(i => ({
+          productId: i._id,
+          name: i.name,
+          price: i.price,
+          discount: i.discount || 0,
+          qty: i.qty
+        })),
+        totalAmount: totalAmount
+      };
+
+      try {
+        const token = localStorage.getItem('customerToken');
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(`${API_URL}/orders`, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify(orderData)
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert('🎉 អរគុណ! ការបញ្ជាទិញរបស់អ្នកបានជោគជ័យ។');
+          localStorage.removeItem('cart');
+          window.location.href = 'account.html'; // ទៅកាន់ទំព័រ Account ដើម្បីមើល Order Status
+        } else {
+          alert('❌ មានបញ្ហា: ' + (data.message || 'មិនអាចធ្វើការបញ្ជាទិញបានទេ'));
+        }
+      } catch (err) {
+        console.error(err);
+        alert('❌ មិនអាចភ្ជាប់ទៅកាន់ Server បានទេ!');
+      }
+    }
+
+    renderSummary();
+  </script>
+</body>
+</html>

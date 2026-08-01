@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>លម្អិតទំនិញ - MyShop</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">My<span>Shop</span></div>
+    <div class="nav-links">
+      <a href="index.html">ទំនិញ</a>
+      <a href="cart.html">កន្ត្រក <span class="badge" id="cartBadge">0</span></a>
+    </div>
+    <div class="nav-icons">
+      <a href="account.html"><i class="fa-solid fa-user"></i></a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="product-detail" id="productDetail">
+      <p style="text-align:center; width:100%;">កំពុងផ្ទុក...</p>
+    </div>
+
+    <!-- Section ទំនិញស្រដៀងគ្នា -->
+    <div class="section-header" style="margin-top:50px;">
+      <h2>🔗 ទំនិញស្រដៀងគ្នា</h2>
+    </div>
+    <div class="product-grid" id="similarProducts"></div>
+
+    <!-- Section ទំនិញដែលបានមើលថ្មីៗ -->
+    <div class="section-header" style="margin-top:50px;">
+      <h2>🕓 ទំនិញដែលបានមើលថ្មីៗ</h2>
+    </div>
+    <div class="product-grid" id="recentlyViewed"></div>
+  </div>
+
+  <script src="js/product.js"></script>
+</body>
+</html>
